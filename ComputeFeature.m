@@ -21,5 +21,4 @@ for i=1:n
         fs(i) = FeatureTypeIV(ii_ims(:,:,i),x,y,w,h);
     end
 end
-fs
 end
