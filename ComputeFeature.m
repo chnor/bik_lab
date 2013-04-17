@@ -13,7 +13,6 @@ for i=1:n
     if(type ==1)
         fs(i) = FeatureTypeI(ii_ims(:,:,i),x,y,w,h);
     elseif(type == 2)
-        FeatureTypeII(ii_ims(:,:,i),x,y,w,h)
         fs(i) = FeatureTypeII(ii_ims(:,:,i),x,y,w,h);
     elseif(type == 3)
         fs(i) = FeatureTypeIII(ii_ims(:,:,i),x,y,w,h);
