@@ -67,6 +67,6 @@ for w = 1:floor(W/2)-2
         end
     end
 end
-all_ftypes = all_ftypes(1:nf,5);
+all_ftypes = all_ftypes(1:nf,1:5);
 end
 
