@@ -1,5 +1,5 @@
 [im, ii_im] = LoadIm('TestImages/big_one_chris.png');
-ii_im(105, 106) == sum(sum(im(1:105, 1:106)))
+ii_im(15, 6) == sum(sum(im(1:15, 1:6)))
 
 %%
 
