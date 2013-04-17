@@ -2,8 +2,8 @@ function all_ftypes = EnumAllFeatures(W, H)
 %Sanity check, make sure nf is around 32 746
 
 %pre allocation (might be to small)
-all_ftypes = zeros(35000,5);
-nf = 0
+all_ftypes = zeros(150000,5);
+nf = 0;
 
 % get all Features of type 1
 for w = 1:W-2
@@ -67,6 +67,6 @@ for w = 1:floor(W/2)-2
         end
     end
 end
-all_ftypes = all_ftypes(nf,5);
+all_ftypes = all_ftypes(1:nf,5);
 end
 
