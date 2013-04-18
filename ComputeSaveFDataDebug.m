@@ -1,7 +1,5 @@
 clear all
 
-global fmat
-
 dirname = 'TrainingImages/FACES';
 
 dinfo4 = load('DebugInfo/debuginfo4.mat');
@@ -13,4 +11,8 @@ rng(dinfo4.jseed);
 LoadSaveImData(dirname, ni, im_sfn);
 ComputeSaveFData(all_ftypes, f_sfn);
 
-sum(sum(dinfo4.fmat == fmat)) == size(fmat, 1)*size(fmat, 2)
+W = 19;
+H = 19;
+fmat = VecAllFeatures(all_ftypes, W, H);
+
+assert(all(all(fmat == dinfo4.fmat)));
