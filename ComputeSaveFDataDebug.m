@@ -17,8 +17,6 @@ fmat = VecAllFeatures(all_ftypes, W, H);
 
 assert(all(all(fmat == dinfo4.fmat)));
 
-%%
-
 face_fnames = dir(dirname);
 addpath(dirname);
 ii_ims = zeros(ni, H*W);
