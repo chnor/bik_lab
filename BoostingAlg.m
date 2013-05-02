@@ -7,8 +7,8 @@ function Cparams = BoostingAlg(Fdata, NFdata, FTdata, T)
                      'all_ftypes', FTdata.all_ftypes);
 	samples = [Fdata.ii_ims; NFdata.ii_ims];
     
-%     fs = samples * FTdata.fmat(:, 1:1000);
-%     fs = samples * FTdata.fmat(:, 12028);
+    %fs = samples * FTdata.fmat(:, 1:1000);
+    %fs = samples * FTdata.fmat(:, 12028);
     fs = samples * FTdata.fmat;
 	ys = [ones(1, length(Fdata.ii_ims)), zeros(1, length(NFdata.ii_ims))]';
 	m = sum(ys == 0);
@@ -20,7 +20,7 @@ function Cparams = BoostingAlg(Fdata, NFdata, FTdata, T)
     ws = ws / sum(ws);
 	
     for t = 1:T
-%         disp(['Starting iteration: ', num2str(t)]);
+        disp(['Starting iteration: ', num2str(t)]);
         [theta_t, p_t, err_t] = LearnWeakClassifier(ws, fs, ys);
         beta_t = err_t / (1 - err_t);
 		f_t = fs(:, theta_t(1));
