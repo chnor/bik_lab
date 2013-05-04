@@ -2,33 +2,35 @@
 function ComputeROC(Cparams, Fdata, NFdata)
     
     face_filenames = dir(Fdata.dirname);
-    training_face_indices = setdiff(1:length(face_filenames), Fdata.fnums);
+    training_face_indices = setdiff(1:min(length(face_filenames), size(Fdata.ii_ims, 1)), Fdata.fnums);
     nonface_filenames = dir(NFdata.dirname);
-    training_nonface_indices = setdiff(1:length(nonface_filenames), NFdata.fnums);
+    training_nonface_indices = setdiff(1:min(length(nonface_filenames), size(NFdata.ii_ims, 1)), NFdata.fnums);
     
-    %detect = @(ii_im) ApplyDetector(Cparams, ii_im);
-    detect = @(ii_im) sum(sum(ii_im)) - floor(sum(sum(ii_im)));
+    detect = @(ii_im) ApplyDetector(Cparams, ii_im);
+%     detect = @(ii_im) sum(sum(ii_im)) - floor(sum(sum(ii_im)));
+    size(Fdata.ii_ims(training_face_indices, :))
+    fc = ApplyDetector(Cparams, Fdata.ii_ims(training_face_indices, :)');
+    nfc = ApplyDetector(Cparams, NFdata.ii_ims(training_nonface_indices, :)');
     
-    fc = arrayfun(detect, Fdata.ii_ims(training_face_indices));
-    nfc = arrayfun(detect, NFdata.ii_ims(training_nonface_indices));
-    
-    theta = 0:0.01:1;
-    ROC = zeros(length(theta), 2);
+    theta = 3:0.01:8;
+    ROC = zeros(length(theta), 3);
     for i = 1:length(theta)
         [tpr, fpr] = ApplyThreshold(fc, nfc, theta(i));
         ROC(i, 1) = tpr;
         ROC(i, 2) = fpr;
+        ROC(i, 3) = theta(i);
     end
+    ROC
     
-    plot(ROC(:, 1), ROC(:, 2));
+    plot(ROC(:, 2), ROC(:, 1));
     
 
 function [tpr, fpr] = ApplyThreshold(fc, nfc, theta)
     
-    n_tp = sum(fc < theta);
-    n_fn = sum(fc >= theta);
-    n_fp = sum(nfc < theta);
-    n_tn = sum(nfc >= theta);
+    n_tp = sum(fc > theta);
+    n_fn = sum(fc <= theta);
+    n_fp = sum(nfc > theta);
+    n_tn = sum(nfc <= theta);
     
     tpr = n_tp / (n_tp + n_fn);
     fpr = n_fp / (n_tn + n_fp);
