@@ -8,7 +8,7 @@ function dets = ScanImageFixedSize(Cparams, im)
     
     dets = [];
     L = 19;
-    theta = 8;
+    theta = 6.5;
     
     ii_im = cumsum(cumsum(im, 1), 2);
     im_square = cumsum(cumsum(im .* im, 1), 2);
