@@ -9,4 +9,3 @@ end
 dinfo3 = load('DebugInfo/debuginfo3.mat');
 ftype = dinfo3.ftype;
 sum(abs(dinfo3.fs - ComputeFeature(ii_ims, ftype)) > eps)
-sum(abs(dinfo3.fs - ComputeFeature(ii_ims, ftype)))
