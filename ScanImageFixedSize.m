@@ -15,7 +15,6 @@ function dets = ScanImageFixedSize(Cparams, im)
     i = 0;
     for x = 1:(size(im, 2) - L + 1)
         for y = 1:(size(im, 1) - L + 1)
-            count = count + 1;
             mu = quick_mean(x, y, L, ii_im);
             sigma = quick_std(x, y, L, mu, im_square);
             ii_im_cur = ii_im(y:(y+L-1), x:(x+L-1));
