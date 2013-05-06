@@ -1,10 +1,20 @@
-function score = ApplyDetector2(Cparams,ii_im,sig,mu)
+function score = ApplyDetector(Cparams,ii_im,sig,mu)
 
     if(nargin<4)
-        score = sum(Cparams.alphas.*(Cparams.Thetas(:,3).*(ii_im(:)' * Cparams.fmat(:,Cparams.Thetas(:,1)))' < Cparams.Thetas(:,3).*Cparams.Thetas(:,2)));
-    else
-        index = find(Cparams.all_ftypes(:,1)==3);
-        del = (mu*Cparams.all_ftypes(index,4).*Cparams.all_ftypes(index,5)/sig);
-        score = sum(Cparams.alphas.*(Cparams.Thetas(:,3).*(ii_im(:)'*Cparams.fmat(:,Cparams.Thetas(:,1)))'<Cparams.Thetas(:,3).*Cparams.Thetas(:,2)))/sig;
+        sig = 1;
+        mu = 0;
     end
+    alpha = Cparams.alphas;
+    j = Cparams.Thetas(:, 1);
+    theta = Cparams.Thetas(:, 2);
+    p = Cparams.Thetas(:, 3);
+    
+    is_type_3 = Cparams.all_ftypes(j, 1) == 3;
+    w = Cparams.all_ftypes(j, 4);
+    h = Cparams.all_ftypes(j, 5);
+
+    f = ii_im(:)' * Cparams.fmat(:, j);
+    f = (f' + is_type_3.*w.*h.*mu) / sig;
+    
+    score = sum(alpha .* (p .* f < p .* theta));
 end

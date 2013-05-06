@@ -3,13 +3,11 @@ function Cparams = BoostingAlg(Fdata, NFdata, FTdata, T)
     
 	Cparams = struct('alphas', [], ...
                      'Thetas', [], ...
-                     'fmat', FTdata.fmat, ...
+                     'fmat', sparse(FTdata.fmat), ...
                      'all_ftypes', FTdata.all_ftypes);
 	samples = [Fdata.ii_ims; NFdata.ii_ims];
     
-    %fs = samples * FTdata.fmat(:, 1:1000);
-    %fs = samples * FTdata.fmat(:, 12028);
-    fs = samples * FTdata.fmat;
+    fs = samples * Cparams.fmat;
 	ys = [ones(1, length(Fdata.ii_ims)), zeros(1, length(NFdata.ii_ims))]';
 	m = sum(ys == 0);
 	n = length(ys);

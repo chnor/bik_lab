@@ -6,12 +6,8 @@ function dets = ScanImageFixedSize(Cparams, im)
     end
     im = double(im);
     
-%    im = (im - mean(im(:))) / std(im(:));
-    
     dets = [];
     L = 19;
-    theta = Cparams.thresh;
-    use_explicit_normalization = true;
     
     ii_im = cumsum(cumsum(im, 1), 2);
     im_square = cumsum(cumsum(im .* im, 1), 2);
@@ -19,18 +15,13 @@ function dets = ScanImageFixedSize(Cparams, im)
     i = 0;
     for x = 1:(size(im, 2) - L + 1)
         for y = 1:(size(im, 1) - L + 1)
-            im_cur = im(y:(y+L-1), x:(x+L-1));
+            count = count + 1;
             mu = quick_mean(x, y, L, ii_im);
             sigma = quick_std(x, y, L, mu, im_square);
-            if use_explicit_normalization
-                im_cur = (im_cur - mu) / sigma;
-                ii_im_cur = cumsum(cumsum(im_cur, 1), 2);
-                response = ApplyDetector(Cparams, ii_im_cur(:));
-            else
-                ii_im_cur = cumsum(cumsum(im_cur, 1), 2);
-                response = ApplyDetector(Cparams, ii_im_cur(:), sigma, mu);
-            end
-            if response > theta
+            ii_im_cur = ii_im(y:(y+L-1), x:(x+L-1));
+            % Optimization left for when needed: inline ApplyDetector
+            response = ApplyDetector(Cparams, ii_im_cur(:), sigma, mu);
+            if response > Cparams.thresh
                 i = i + 1;
                 dets(i, :) = [x, y, x+L-1, y+L-1, response];
             end
