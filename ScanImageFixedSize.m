@@ -10,7 +10,7 @@ function dets = ScanImageFixedSize(Cparams, im)
     
     dets = [];
     L = 19;
-    theta = 8;
+    theta = Cparams.thresh;
     use_explicit_normalization = true;
     
     ii_im = cumsum(cumsum(im, 1), 2);
