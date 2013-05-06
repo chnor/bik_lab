@@ -1,0 +1,6 @@
+%CheckOne
+LoadImDebug;
+FeatureTypeAll_debug
+ComputeFeatures_debug;
+ComputeSaveFDataDebug
+GetTrainingDataDebug;
