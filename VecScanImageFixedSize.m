@@ -15,12 +15,26 @@ function dets = VecScanImageFixedSize(Cparams, ImageScanner, im)
     
     ii_ims = ii_im(ImageScanner.I_gamma);
     
-    mu = ImageScanner.T_gamma * ii_im(:);
+    % Add padding zeros to avoid having to treat edges
+    % as a special case (x == 1 or y == 1) when constructing.
+    % This makes the code a bit messier but the speed gains
+    % are massive.
+    
+    ii_im(2:end+1, 2:end+1) = ii_im(1:end, 1:end);
+    im_square(2:end+1, 2:end+1) = im_square(1:end, 1:end);
+    
+    mu = ii_im(ImageScanner.T_gamma(1, :)) ...
+       - ii_im(ImageScanner.T_gamma(2, :)) ...
+       - ii_im(ImageScanner.T_gamma(3, :)) ...
+       + ii_im(ImageScanner.T_gamma(4, :));
     mu = mu ./ (L^2);
-    sigma = ImageScanner.T_gamma * im_square(:);
+    sigma = im_square(ImageScanner.T_gamma(1, :)) ...
+          - im_square(ImageScanner.T_gamma(2, :)) ...
+          - im_square(ImageScanner.T_gamma(3, :)) ...
+          + im_square(ImageScanner.T_gamma(4, :));
     sigma = sqrt((sigma - L^2 .* mu.^2) ./ (L^2 - 1));
     
-    responses = VecApplyDetector(Cparams, ii_ims, sigma', mu');
+    responses = VecApplyDetector(Cparams, ii_ims, sigma, mu);
     
     [~, hits] = find(responses > Cparams.thresh);
     i = 0;

@@ -1,34 +1,48 @@
+% Construct an ImageScanner object to scan on subwindows
+% of size L*L over an image of size W*H.
 
 function ImageScanner = ConstructVecScanner(W, H, L)
+    
+    assert(W >= L);
+    assert(H >= L);
+
+    N = (W - L + 1)*(H - L + 1);
     
     ImageScanner = struct( ...
         'W', W, ...
         'H', H, ...
-        'T_gamma', sparse(zeros((W - L + 1)*(H - L + 1), W*H)), ...
+        'T_gamma', zeros(4, N), ...
         'I_gamma', [], ...
         'L', L ...
 	);
     
-    % XXX Construct summing matrix by brute force
-    % TODO vectorize the following similarly to the
-    %      construction of I_gamma
-    c = 0;
-    for x = 1:(W - L + 1)
-        for y = 1:(H - L + 1)
-            c = c + 1;
-            
-            ImageScanner.T_gamma(c, (y+L-1) + (x+L-2)*H) = 1;
-            if x > 1
-                ImageScanner.T_gamma(c, (y+L-1) + (x-2)*H) = -1;
-            end
-            if y > 1
-                ImageScanner.T_gamma(c, (y-1) + (x+L-2)*H) = -1;
-            end
-            if x > 1 && y > 1
-                ImageScanner.T_gamma(c, (y-1) + (x-2)*H) = 1;
-            end
-        end
-    end
+    % ~~~~~~ Calculate T_gamma ~~~~~~
+    
+    C = (1:N)';
+    x = 2:(W - L + 2);
+    y = 2:(H - L + 2);
+    
+    % Calculate indices for the lower right corner
+    T_11 = bsxfun(@plus, (x'+L-2)*(H+1), y+L-1);
+    T_11 = T_11';
+    ImageScanner.T_gamma(4, :) = T_11(:);
+    
+    % Calculate indices for the lower left corner
+    T_01 = bsxfun(@plus, (x'-2)*(H+1), y+L-1);
+    T_01 = T_01';
+    ImageScanner.T_gamma(2, :) = T_01(:);
+    
+    % Calculate indices for the upper right corner
+    T_10 = bsxfun(@plus, (x'+L-2)*(H+1), y-1);
+    T_10 = T_10';
+    ImageScanner.T_gamma(3, :) = T_10(:);
+    
+    % Calculate indices for the upper left corner
+    T_00 = bsxfun(@plus, (x'-2)*(H+1), y-1);
+    T_00 = T_00';
+    ImageScanner.T_gamma(1, :) = T_00(:);
+    
+    % ~~~~~~ Calculate I_gamma ~~~~~~
     
     % Calculate each index in the subwindow
     w_i =  bsxfun(@plus, H*(0:L-1)',(1:L));
@@ -40,4 +54,3 @@ function ImageScanner = ConstructVecScanner(W, H, L)
     % Add the subwindow index matrix to
     % each starting index
     ImageScanner.I_gamma = bsxfun(@plus, w_i, i_0);
-    
