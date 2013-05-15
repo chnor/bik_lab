@@ -6,15 +6,15 @@ function dets = ScanImageOverScale(Cparams, im, min_s, max_s, step_s)
     end
     im = double(im);
     
-    s = max_s;
+    ss = min_s:step_s:max_s;
     dets = [];
-    while s >= min_s
+    parfor i = 1:length(ss)
+        s = ss(i);
         im_cur = imresize(im, s);
 %         new_dets = ScanImageFixedSize(Cparams, im_cur);
         [H, W, ~] = size(im_cur);
         ImageScanner = ConstructVecScanner(W, H, 19);
         new_dets = VecScanImageFixedSize(Cparams, ImageScanner, im_cur);
         dets = [dets; new_dets/s];
-        s = s - step_s;
     end
     
