@@ -32,5 +32,5 @@ function Cparams = BoostingAlg(Fdata, NFdata, FTdata, T)
         Cparams.Thetas(t, 3) = p_t;
     end
     
-    Cparams.thresh = sum(Cparams.alphas)/2;
+    Cparams.thresh = 1.2*sum(Cparams.alphas)/2;
 end
