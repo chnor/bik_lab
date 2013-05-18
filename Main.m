@@ -3,9 +3,11 @@ already_loaded = false;
 
 face_fnames = dir('TrainingImages/FACES');
 non_face_fnames = dir('TrainingImages/NFACES');
-np = length(face_fnames) - 2;
-nn = length(non_face_fnames) - 2;
-T = 100;
+%np = length(face_fnames) - 2;
+%nn = length(non_face_fnames) - 2;
+np = 4000;
+nn = 6000;
+T = 40;
 
 if exist('FaceData.mat', 'file') == 2 && ...
         exist('NonFaceData.mat', 'file') == 2 && ...
@@ -42,22 +44,49 @@ if already_loaded == false
 end
 
 disp('Boosting...');
-Cparams = BoostingAlg(Fdata, NFdata, FTdata, T);
+%Cparams = BoostingAlg(Fdata, NFdata, FTdata, T);
 disp('Done')
 
-directory = 'Testing/Images';
+fid = fopen('Testing/faces_bbs.txt');
 
-test_images = dir(directory);
-test_images = test_images(3:length(test_images));
-
-for i=1:length(test_images)
-    im_name = test_images(i).name;
-    im = imread([directory, '/', im_name]);
+tline = fgets(fid);
+while ischar(tline)
+    disp(tline)
+    tline = tline(1:end-1);
+    im = imread([directory, '/', tline]);
+    tline = fgets(fid);
+    disp(tline)
+    real_dets = sscanf(tline, '%f');
+    real_dets = [real_dets(1) real_dets(2) real_dets(1)+real_dets(3) real_dets(2)+real_dets(4)];
+    d1 = min(real_dets(1), real_dets(3));
+    d2 = min(real_dets(2), real_dets(4));
+    d3 = max(real_dets(1), real_dets(3));
+    d4 = max(real_dets(2), real_dets(4));
+    real_dets = [d1 d2 d3 d4];
+    %[h, w, ~] = size(im);
+    %im = imresize(im, 250/min(w, h));
     [h, w, ~] = size(im);
-    dets = ScanImageOverScale(Cparams, im, 19/min(w, h), 0.6, .05);
-    set(gca, 'Position', [0 0 1 1]);
-    %dets = PruneDetections(dets)
-    DisplayDetections(im, dets);
-    drawnow;
-%     print('-dpng','-r100', '-noui', ['Results/',im_name]);
+    min_s = 19/min(w, h);
+    max_s = 0.6;
+    step_s = (max_s-min_s)/4;
+    dets = ScanImageOverScale(Cparams, im, min_s, max_s, step_s);
+    [~, i] = find((dets(:, 3) < real_dets(1)) & ...
+                  (dets(:, 4) < real_dets(2)) & ...
+                  (dets(:, 1) > real_dets(3)) & ...
+                  (dets(:, 2) > real_dets(4)));
+    i
+    
+    %DisplayDetections(im, dets, real_dets);
+    %drawnow;
+    %pause(1);
+    for det = dets'
+        sub_im = im(det(2):det(4), det(1):det(3), :);
+        imagesc(sub_im);
+        axis image;
+        drawnow;
+        pause(1);
+    end
+    
+    tline = fgets(fid);
 end
+
