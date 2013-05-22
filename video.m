@@ -7,6 +7,7 @@ while 1
     
     [h, w, ~] = size(data);
     data = imresize(data, 200/min(w, h));
+    data = data(:, end:-1:1, :);
     
     [h, w, ~] = size(data);
     min_s = 20/min(w, h);
@@ -15,8 +16,9 @@ while 1
     tic;
 
     dets = ScanImageOverScale(Cparams, data, min_s, max_s, step_s);
-    dets = PruneDetections(dets);
+    %dets = PruneDetections(dets);
 
     toc;
+    figure(2)
     DisplayDetections2(data, dets)
 end
